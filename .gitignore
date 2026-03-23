@@ -32,6 +32,9 @@ MANIFEST
 *.manifest
 *.spec
 
+# user-service local JSON log sink
+services/user-service/logs/
+
 # Installer logs
 pip-log.txt
 pip-delete-this-directory.txt
