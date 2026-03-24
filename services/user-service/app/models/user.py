@@ -20,7 +20,7 @@ class UserProfile(Base):
         default = uuid.uuid4,
         index = True
     )
-    
+    email: Mapped[str] = mapped_column(String(255), nullable=False)
     display_name: Mapped[str] = mapped_column(String(255), nullable=False)
     avatar_url: Mapped[str] = mapped_column(String(255), nullable=False)
     bio: Mapped[str] = mapped_column(String(255), nullable=False)
