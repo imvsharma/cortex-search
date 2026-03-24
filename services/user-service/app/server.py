@@ -79,7 +79,7 @@ async def lifespan(_app: FastAPI):
         },
     )
     yield
-    log.info("service_stop", extra={"event": "service_stop"})
+    log.error("service_stop", extra={"event": "service_stop"})
 
 
 app = FastAPI(title="User Service", lifespan=lifespan)

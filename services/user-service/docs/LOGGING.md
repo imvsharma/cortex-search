@@ -32,6 +32,8 @@ configure_logging(settings.log_level, json_log_path=settings.log_json_file)
 
 Handlers attach to the **root** logger only once per process; repeated calls refresh level and re-route Uvicorn loggers.
 
+**Uvicorn logger names:** Uvicorn logs many lifecycle lines (e.g. “Application startup complete”) on the `uvicorn.error` logger at **INFO** because that channel maps to stderr. `UvicornDisplayNameFilter` rewrites the displayed/logger field to **`uvicorn.server`** for any record below **ERROR**, so console and JSON lines are not misleading. Real **ERROR** / **CRITICAL** records from that logger still show as `uvicorn.error`.
+
 ---
 
 ## 2. Using logging in any file
@@ -140,6 +142,6 @@ log.info("Received header value=%s", safe)
 | App / worker startup | `configure_logging` |
 | Correlate logs in non-HTTP code | `request_id_ctx` |
 | Sanitize untrusted fragments | `_sanitize_log_fragment` |
-| Tests or custom handlers (rare) | `JsonFormatter`, `ConsoleFormatter`, `RequestIdFilter` |
+| Tests or custom handlers (rare) | `JsonFormatter`, `ConsoleFormatter`, `RequestIdFilter`, `UvicornDisplayNameFilter` |
 
 Normal feature code only needs `logging.getLogger(...)` plus optional `configure_logging` in its entrypoint if it is a standalone process.

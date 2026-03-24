@@ -38,6 +38,25 @@ class RequestIdFilter(logging.Filter):
         return True
 
 
+# Uvicorn emits most stderr lifecycle lines (startup banner, "Application startup complete") on the
+# `uvicorn.error` logger even at INFO — the name reflects the stream, not the level.
+_UvicornErrorLogger = "uvicorn.error"
+_UvicornServerDisplayName = "uvicorn.server"
+
+
+class UvicornDisplayNameFilter(logging.Filter):
+    """
+    Show a clearer logger name for non-error records from Uvicorn's stderr logger.
+
+    Keeps `uvicorn.error` only for ERROR/CRITICAL so operators are not misled by INFO lines.
+    """
+
+    def filter(self, record: logging.LogRecord) -> bool:  # noqa: A003
+        if record.name == _UvicornErrorLogger and record.levelno < logging.ERROR:
+            record.name = _UvicornServerDisplayName
+        return True
+
+
 # Explicit allow-list for `extra={...}` fields in JSON and console (no LogRecord internals).
 _STRUCTURED_KEYS = frozenset(
     {
@@ -153,10 +172,12 @@ def configure_logging(level: str = "INFO", *, json_log_path: str | None = None) 
         _logging_configured = True
 
         req_filter = RequestIdFilter()
+        uvicorn_name_filter = UvicornDisplayNameFilter()
 
         console = logging.StreamHandler(sys.stdout)
         console.setFormatter(ConsoleFormatter(stream=console.stream))
         console.addFilter(req_filter)
+        console.addFilter(uvicorn_name_filter)
         root.addHandler(console)
 
         if json_log_path:
@@ -165,6 +186,7 @@ def configure_logging(level: str = "INFO", *, json_log_path: str | None = None) 
             file_handler = logging.FileHandler(path, encoding="utf-8")
             file_handler.setFormatter(JsonFormatter())
             file_handler.addFilter(req_filter)
+            file_handler.addFilter(uvicorn_name_filter)
             root.addHandler(file_handler)
 
     _route_uvicorn_loggers_to_root(level_no)
@@ -174,6 +196,7 @@ __all__ = [
     "ConsoleFormatter",
     "JsonFormatter",
     "RequestIdFilter",
+    "UvicornDisplayNameFilter",
     "configure_logging",
     "_route_uvicorn_loggers_to_root",
     "request_id_ctx",
