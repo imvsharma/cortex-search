@@ -12,6 +12,7 @@ from .core.logging_config import (
     request_id_ctx,
     _sanitize_log_fragment,
 )
+from .middleware import register_exception_handlers
 from .startup_checks import run_startup_dependency_checks
 
 log = logging.getLogger("app.user_service")
@@ -79,10 +80,11 @@ async def lifespan(_app: FastAPI):
         },
     )
     yield
-    log.error("service_stop", extra={"event": "service_stop"})
+    log.info("service_stop", extra={"event": "service_stop"})
 
 
 app = FastAPI(title="User Service", lifespan=lifespan)
+register_exception_handlers(app)
 app.add_middleware(RequestIdASGIMiddleware)
 
 app.include_router(user.router)

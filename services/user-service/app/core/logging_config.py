@@ -72,6 +72,7 @@ _STRUCTURED_KEYS = frozenset(
         "dependency",
         "outcome",
         "startup_report",
+        "exc_type",
     }
 )
 

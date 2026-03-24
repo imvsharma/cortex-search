@@ -15,7 +15,8 @@ class UserProfileRepository:
     @staticmethod
     async def create(db: AsyncSession, user_profile_data: UserCreate) -> UserProfile:
         """Persist a new profile from a validated Pydantic model and return the stored row."""
-        user_profile = UserProfile(**user_profile_data.model_dump())
+        payload = user_profile_data.model_dump(mode="json", exclude_none=True)
+        user_profile = UserProfile(**payload)
         db.add(user_profile)
         await db.commit()
         await db.refresh(user_profile)
@@ -51,7 +52,10 @@ class UserProfileRepository:
         existing_user_profile = result.scalar_one_or_none()
         if existing_user_profile is None:
             return None
-        for key, value in user_profile_data.model_dump(exclude_unset=True).items():
+        for key, value in user_profile_data.model_dump(
+            mode="json",
+            exclude_unset=True,
+        ).items():
             setattr(existing_user_profile, key, value)
         await db.commit()
         await db.refresh(existing_user_profile)

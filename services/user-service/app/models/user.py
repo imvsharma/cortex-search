@@ -19,10 +19,10 @@ class UserProfile(Base):
         primary_key=True,
         default=uuid.uuid4,
     )
-    email: Mapped[str] = mapped_column(String(255), nullable=False)
-    display_name: Mapped[str] = mapped_column(String(255), nullable=False)
-    avatar_url: Mapped[str] = mapped_column(String(255), nullable=False)
-    bio: Mapped[str] = mapped_column(String(255), nullable=False)
+    email: Mapped[str] = mapped_column(String(255), nullable=True)
+    display_name: Mapped[str] = mapped_column(String(255), nullable=True)
+    avatar_url: Mapped[str] = mapped_column(String(255), nullable=True)
+    bio: Mapped[str] = mapped_column(String(255), nullable=True)
     last_seen: Mapped[datetime] = mapped_column(DateTime, default=sa_now(), onupdate=sa_now())
 
     def __repr__(self) -> str:

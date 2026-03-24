@@ -1,27 +1,33 @@
 from datetime import datetime
-from typing import Optional
-from uuid import UUID
-from pydantic import BaseModel, EmailStr, HttpUrl
+from uuid import UUID, uuid4
+
+from pydantic import BaseModel, ConfigDict, EmailStr, Field, HttpUrl
+
 
 class UserCreate(BaseModel):
-    user_id: Optional[UUID]
-    email: Optional[EmailStr]=None
-    display_name: Optional[str]=None
-    avatar_url: Optional[HttpUrl]=None
-    bio: Optional[str]=None
-    last_seen: Optional[datetime]=None
-    
+    """Payload to create a profile; omit optional fields or send null to store NULL."""
+
+    user_id: UUID = Field(default_factory=uuid4)
+    email: EmailStr | None = None
+    display_name: str | None = None
+    avatar_url: HttpUrl | None = None
+    bio: str | None = None
+
+
 class UserUpdate(BaseModel):
-    email: Optional[EmailStr]=None
-    display_name: Optional[str]=None
-    avatar_url: Optional[HttpUrl]=None
-    bio: Optional[str]=None
-    last_seen: Optional[datetime]=None
+    email: EmailStr | None = None
+    display_name: str | None = None
+    avatar_url: HttpUrl | None = None
+    bio: str | None = None
+    last_seen: datetime | None = None
+
 
 class UserCreatedResponse(BaseModel):
-    user_id: Optional[UUID]
-    email: Optional[EmailStr]=None
-    display_name: Optional[str]=None
-    avatar_url: Optional[HttpUrl]=None
-    bio: Optional[str]=None
-    last_seen: Optional[datetime]=None
+    model_config = ConfigDict(from_attributes=True)
+
+    user_id: UUID
+    email: EmailStr | None = None
+    display_name: str | None = None
+    avatar_url: HttpUrl | None = None
+    bio: str | None = None
+    last_seen: datetime | None = None
