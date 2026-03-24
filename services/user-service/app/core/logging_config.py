@@ -52,6 +52,7 @@ _STRUCTURED_KEYS = frozenset(
         "count",
         "dependency",
         "outcome",
+        "startup_report",
     }
 )
 

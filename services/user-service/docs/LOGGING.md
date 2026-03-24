@@ -70,7 +70,7 @@ Only keys listed in `_STRUCTURED_KEYS` inside `logging_config.py` are copied int
 
 Current allow-list:
 
-`event`, `environment`, `project`, `method`, `path`, `status_code`, `duration_ms`, `user_id`, `count`, `dependency`, `outcome`
+`event`, `environment`, `project`, `method`, `path`, `status_code`, `duration_ms`, `user_id`, `count`, `dependency`, `outcome`, `startup_report`
 
 **Convention:** set `event` to a stable machine-friendly name; use the **message** for a short human-readable phrase (they can match).
 
