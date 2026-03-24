@@ -50,6 +50,8 @@ _STRUCTURED_KEYS = frozenset(
         "duration_ms",
         "user_id",
         "count",
+        "dependency",
+        "outcome",
     }
 )
 

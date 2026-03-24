@@ -12,6 +12,7 @@ from .core.logging_config import (
     request_id_ctx,
     _sanitize_log_fragment,
 )
+from .startup_checks import run_startup_dependency_checks
 
 log = logging.getLogger("app.user_service")
 
@@ -68,6 +69,7 @@ async def lifespan(_app: FastAPI):
     configure_logging(settings.log_level, json_log_path=settings.log_json_file)
     environment = settings.environment
     assert isinstance(environment, Environment)
+    await run_startup_dependency_checks()
     log.info(
         "service_start",
         extra={
