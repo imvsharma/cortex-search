@@ -38,10 +38,23 @@ class RequestIdFilter(logging.Filter):
         return True
 
 
-# Explicit allow-list for `extra={...}` fields in JSON (no LogRecord internals).
+# Explicit allow-list for `extra={...}` fields in JSON and console (no LogRecord internals).
 _STRUCTURED_KEYS = frozenset(
-    {"event", "environment", "project", "method", "path", "status_code", "duration_ms"}
+    {
+        "event",
+        "environment",
+        "project",
+        "method",
+        "path",
+        "status_code",
+        "duration_ms",
+        "user_id",
+        "count",
+    }
 )
+
+# Console: show allow-listed extras except `event` (duplicates the message when msg == event).
+_CONSOLE_STRUCTURED_KEYS = sorted(_STRUCTURED_KEYS - {"event"})
 
 
 class JsonFormatter(logging.Formatter):
@@ -99,7 +112,14 @@ class ConsoleFormatter(logging.Formatter):
         else:
             level = f"{record.levelname:8s}"
         rid = getattr(record, "request_id", "-")
-        line = f"{ts} | {level} | {rid} | {record.name} | {record.getMessage()}"
+        extras: list[str] = []
+        for key in _CONSOLE_STRUCTURED_KEYS:
+            if hasattr(record, key):
+                val = getattr(record, key)
+                if val is not None and val != "":
+                    extras.append(f"{key}={val}")
+        extra_suffix = f" | {' '.join(extras)}" if extras else ""
+        line = f"{ts} | {level} | {rid} | {record.name} | {record.getMessage()}{extra_suffix}"
         if record.exc_info:
             line = f"{line}\n{self.formatException(record.exc_info)}"
         return line

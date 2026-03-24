@@ -1,7 +1,7 @@
 from datetime import datetime
 from typing import Optional
 from uuid import UUID
-from pydantic import BaseModel, EmailStr, HttpUrl, date
+from pydantic import BaseModel, EmailStr, HttpUrl
 
 class UserCreate(BaseModel):
     user_id: Optional[UUID]
